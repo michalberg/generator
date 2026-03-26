@@ -32,9 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-box">
         <div class="login-logo">
             <span class="logo-zeleni">ZELENÍ</span>
-            <span class="logo-brno">Brno</span>
+            <h1>Generátor pro Instagram</h1>
         </div>
-        <h1>Social Generator</h1>
         <form method="POST">
             <?php if ($error): ?>
                 <div class="error-msg"><?= htmlspecialchars($error) ?></div>
