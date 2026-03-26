@@ -1,0 +1,44 @@
+name: Deploy na jakebrno.cz/generator
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vytvoř config.php ze secrets
+        env:
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+        run: |
+          cat > config.php << 'EOF'
+          <?php
+          define('APP_PASSWORD', getenv('APP_PASSWORD') ?: '');
+          define('CLAUDE_API_KEY', getenv('CLAUDE_API_KEY') ?: '');
+          define('SESSION_TIMEOUT', 1800);
+          EOF
+          # Přepsat placeholdery skutečnými hodnotami
+          sed -i "s|getenv('APP_PASSWORD') ?: ''|'${APP_PASSWORD}'|g" config.php
+          sed -i "s|getenv('CLAUDE_API_KEY') ?: ''|'${CLAUDE_API_KEY}'|g" config.php
+
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Upload via FTP
+        env:
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -c "
+            set ftp:passive-mode true;
+            set ftp:ssl-allow no;
+            set net:timeout 60;
+            set net:max-retries 5;
+            set net:reconnect-interval-base 5;
+            open -u 'jakebrno.cz','$FTP_PASSWORD' ftp://62.109.154.45;
+            mirror -R --parallel=2 --exclude-glob .git* --exclude-glob .github --exclude-glob '*.md' ./ /public_html/generator/;
+            bye
+          "

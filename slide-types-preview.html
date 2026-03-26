@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zelení – 5 typů slidů</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+            color: #333;
+        }
+        
+        .slides-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 1200px) {
+            .slides-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @media (max-width: 768px) {
+            .slides-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        .slide-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .slide-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+        
+        .slide-desc {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .slide {
+            aspect-ratio: 4/5;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .slide-green { background: #0bd26f; }
+        .slide-white { background: #fff; border: 1px solid #ddd; }
+        
+        /* Růžové pruhy */
+        .pink-stripe {
+            position: absolute;
+            background: #ffa6d1;
+            transform: rotate(-28deg);
+        }
+        
+        /* Textový box */
+        .text-box {
+            background: #fff;
+            position: absolute;
+            padding: 16px 20px;
+            transform: rotate(-1.5deg);
+        }
+        
+        /* Speech bubble */
+        .speech-bubble {
+            background: #fff;
+            position: absolute;
+            padding: 16px 20px;
+            border-radius: 4px;
+        }
+        
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 24px;
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 14px solid #fff;
+        }
+        
+        /* Typografie */
+        .slide-title {
+            font-family: Impact, 'Arial Black', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            color: #000;
+            letter-spacing: -0.5px;
+        }
+        
+        .slide-title-lg { font-size: 28px; }
+        
+        .slide-body {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #000;
+        }
+        
+        .slide-italic {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            color: #000;
+        }
+        
+        /* Logo */
+        .logo {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .logo-zeleni {
+            font-family: Impact, 'Arial Black', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-brno {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            color: #000;
+        }
+        
+        /* Šipka */
+        .arrow {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .arrow svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        /* Statistika */
+        .stat-number {
+            font-family: Impact, 'Arial Black', sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #000;
+            text-align: center;
+            margin-top: 8px;
+        }
+        
+        /* URL box */
+        .url-box {
+            background: #fff;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #000;
+            display: inline-block;
+        }
+        
+        /* Foto placeholder */
+        .photo-placeholder {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 55%;
+            height: 75%;
+            background: linear-gradient(135deg, #e0e0e0 0%, #bbb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        /* CTA text */
+        .cta-text {
+            font-family: Impact, 'Arial Black', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #000;
+            text-align: center;
+            line-height: 1.1;
+        }
+        
+        /* Legenda */
+        .legend {
+            max-width: 1400px;
+            margin: 60px auto 0;
+            padding: 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .legend h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .legend-text {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zelení – 5 typů slidů pro carousel</h1>
+    
+    <div class="slides-grid">
+        <!-- 1. HERO -->
+        <div class="slide-wrapper">
+            <div class="slide slide-green">
+                <div class="pink-stripe" style="width:80px;height:28px;top:8%;left:-20px"></div>
+                <div class="pink-stripe" style="width:65px;height:24px;top:22%;right:-15px;transform:rotate(-32deg)"></div>
+                <div class="pink-stripe" style="width:55px;height:20px;bottom:28%;left:-12px;transform:rotate(-22deg)"></div>
+                <div class="pink-stripe" style="width:70px;height:25px;bottom:12%;right:-18px"></div>
+                
+                <div class="text-box" style="top:30%;left:10%;right:10%">
+                    <div class="slide-title slide-title-lg">Bude Brno bez šalin v centru?</div>
+                </div>
+                
+                <div class="logo">
+                    <span class="logo-zeleni">Zelení</span>
+                    <span class="logo-brno">Brno</span>
+                </div>
+                
+                <div class="arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-label">1. Hero (hook)</div>
+            <div class="slide-desc">Zastavit scroll – provokativní otázka nebo bold statement</div>
+        </div>
+        
+        <!-- 2. OBSAH -->
+        <div class="slide-wrapper">
+            <div class="slide slide-white">
+                <div class="pink-stripe" style="width:60px;height:22px;top:5%;right:-12px"></div>
+                <div class="pink-stripe" style="width:50px;height:18px;bottom:22%;left:-15px;transform:rotate(-35deg)"></div>
+                
+                <div style="padding:24px 20px">
+                    <div class="slide-title" style="font-size:18px;margin-bottom:16px">Proč je to problém?</div>
+                    <div class="slide-body">
+                        → Zhoršení dopravy pro tisíce lidí denně<br><br>
+                        → Delší dojezdové časy do centra<br><br>
+                        → Méně ekologické město
+                    </div>
+                </div>
+                
+                <div class="logo">
+                    <span class="logo-zeleni" style="color:#0bd26f">Zelení</span>
+                    <span class="logo-brno">Brno</span>
+                </div>
+                
+                <div class="arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-label">2. Obsah</div>
+            <div class="slide-desc">Informace, argumenty, fakta – bílé nebo zelené pozadí</div>
+        </div>
+        
+        <!-- 3. CITACE -->
+        <div class="slide-wrapper">
+            <div class="slide slide-green">
+                <div class="pink-stripe" style="width:70px;height:26px;top:5%;left:-15px"></div>
+                <div class="pink-stripe" style="width:55px;height:20px;top:38%;right:-12px;transform:rotate(-25deg)"></div>
+                
+                <div class="photo-placeholder">👤 fotka</div>
+                
+                <div class="speech-bubble" style="top:15%;left:6%;right:48%">
+                    <div class="slide-italic">"Omezení šalin jde opačným směrem."</div>
+                </div>
+                
+                <div style="position:absolute;top:58%;left:6%">
+                    <div class="slide-body" style="font-weight:600">Jan Novák</div>
+                    <div class="slide-italic" style="font-size:13px">zastupitel MČ Brno-střed</div>
+                </div>
+                
+                <div class="logo">
+                    <span class="logo-zeleni">Zelení</span>
+                    <span class="logo-brno">Brno</span>
+                </div>
+                
+                <div class="arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-label">3. Citace s fotkou</div>
+            <div class="slide-desc">Personalizace, lidský element, důvěryhodnost</div>
+        </div>
+        
+        <!-- 4. STATISTIKA -->
+        <div class="slide-wrapper">
+            <div class="slide slide-green">
+                <div class="pink-stripe" style="width:75px;height:28px;top:10%;right:-18px"></div>
+                <div class="pink-stripe" style="width:60px;height:22px;bottom:32%;left:-15px;transform:rotate(-35deg)"></div>
+                <div class="pink-stripe" style="width:50px;height:18px;bottom:10%;right:20%"></div>
+                
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:80%">
+                    <div class="stat-number">70%</div>
+                    <div class="stat-label">Čechů chce více zeleně ve městech</div>
+                </div>
+                
+                <div class="logo">
+                    <span class="logo-zeleni">Zelení</span>
+                    <span class="logo-brno">Brno</span>
+                </div>
+                
+                <div class="arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-label">4. Statistika</div>
+            <div class="slide-desc">Důraz na konkrétní číslo nebo data</div>
+        </div>
+        
+        <!-- 5. CTA -->
+        <div class="slide-wrapper">
+            <div class="slide slide-green">
+                <div class="pink-stripe" style="width:72px;height:26px;top:8%;left:-15px"></div>
+                <div class="pink-stripe" style="width:62px;height:23px;top:28%;right:-18px;transform:rotate(-30deg)"></div>
+                <div class="pink-stripe" style="width:55px;height:20px;bottom:38%;left:-12px;transform:rotate(-20deg)"></div>
+                <div class="pink-stripe" style="width:48px;height:18px;bottom:15%;right:15%"></div>
+                
+                <div style="position:absolute;top:40%;left:8%;right:8%;text-align:center">
+                    <div class="cta-text">Podepište petici!</div>
+                    <div style="margin-top:20px">
+                        <span class="url-box">www.petice.online/saliny</span>
+                    </div>
+                </div>
+                
+                <div class="logo">
+                    <span class="logo-zeleni">Zelení</span>
+                    <span class="logo-brno">Brno</span>
+                </div>
+                
+                <!-- BEZ ŠIPKY - signalizuje konec -->
+            </div>
+            <div class="slide-label">5. CTA (závěr)</div>
+            <div class="slide-desc">Výzva k akci – BEZ šipky (konec carouselu)</div>
+        </div>
+    </div>
+    
+    <div class="legend">
+        <h2>Grafické prvky</h2>
+        <div class="legend-grid">
+            <div class="legend-item">
+                <div class="legend-color" style="background:#0bd26f"></div>
+                <div class="legend-text"><strong>#0bd26f</strong> – primární zelená (pozadí)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#ffa6d1"></div>
+                <div class="legend-text"><strong>#ffa6d1</strong> – růžový akcent (pruhy)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#fff;border:1px solid #ddd"></div>
+                <div class="legend-text"><strong>#ffffff</strong> – bílá (textové boxy, alt. pozadí)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#000"></div>
+                <div class="legend-text"><strong>#000000</strong> – černá (text)</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

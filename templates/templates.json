@@ -1,0 +1,93 @@
+{
+    "templates": [
+        {
+            "id": "zeleni-default",
+            "name": "Zelení – výchozí",
+            "styles": {
+                "background": "#0bd26f",
+                "backgroundAlt": "#ffffff",
+                "accent": "#ffa6d1",
+                "text": "#000000",
+                "textInverse": "#ffffff"
+            },
+            "logo": {
+                "url": "https://petice.online/logo-zeleni-brno.png",
+                "position": "bottom-left"
+            },
+            "slideTypes": {
+                "hero": {
+                    "name": "Úvodní hook",
+                    "background": "primary",
+                    "fields": [
+                        { "name": "title", "label": "Nadpis", "type": "textarea", "maxChars": 60, "required": true },
+                        { "name": "subtitle", "label": "Podnadpis", "type": "textarea", "maxChars": 100, "required": false }
+                    ],
+                    "hasArrow": true
+                },
+                "content": {
+                    "name": "Textový obsah",
+                    "background": "selectable",
+                    "fields": [
+                        { "name": "title", "label": "Nadpis", "type": "text", "maxChars": 50, "required": true },
+                        { "name": "body", "label": "Text", "type": "textarea", "maxChars": 250, "required": true },
+                        { "name": "background", "label": "Pozadí", "type": "select", "options": ["Zelená", "Bílá"], "required": true }
+                    ],
+                    "hasArrow": true
+                },
+                "quote": {
+                    "name": "Fotka s citací",
+                    "background": "primary",
+                    "fields": [
+                        { "name": "quote", "label": "Citace", "type": "textarea", "maxChars": 150, "required": true },
+                        { "name": "author", "label": "Jméno", "type": "text", "maxChars": 40, "required": true },
+                        { "name": "role", "label": "Funkce", "type": "text", "maxChars": 50, "required": false },
+                        { "name": "photo", "label": "Fotka", "type": "image", "required": false }
+                    ],
+                    "hasArrow": true
+                },
+                "image": {
+                    "name": "Obrázek s titulkem",
+                    "background": "selectable",
+                    "fields": [
+                        { "name": "title", "label": "Titulek", "type": "textarea", "maxChars": 100, "required": true },
+                        { "name": "photo", "label": "Fotka", "type": "image", "required": false },
+                        { "name": "caption", "label": "Popisek fotky", "type": "textarea", "maxChars": 80, "required": false }
+                    ],
+                    "hasArrow": true
+                },
+                "beforeafter": {
+                    "name": "Před / Po",
+                    "background": "selectable",
+                    "fields": [
+                        { "name": "title",       "label": "Nadpis (volitelný)", "type": "textarea", "maxChars": 60,  "required": false },
+                        { "name": "photoBefore", "label": "Fotka – Před",       "type": "image",    "required": false },
+                        { "name": "photoAfter",  "label": "Fotka – Po",         "type": "image",    "required": false },
+                        { "name": "labelBefore", "label": "Popisek Před",       "type": "text",     "maxChars": 30,  "required": false },
+                        { "name": "labelAfter",  "label": "Popisek Po",         "type": "text",     "maxChars": 30,  "required": false }
+                    ],
+                    "hasArrow": true
+                },
+                "stat": {
+                    "name": "Statistika",
+                    "background": "selectable",
+                    "fields": [
+                        { "name": "number", "label": "Číslo", "type": "text", "maxChars": 10, "required": true },
+                        { "name": "unit", "label": "Jednotka", "type": "text", "maxChars": 15, "required": false },
+                        { "name": "description", "label": "Popisek", "type": "textarea", "maxChars": 80, "required": true },
+                        { "name": "background", "label": "Pozadí", "type": "select", "options": ["Zelená", "Bílá"], "required": true }
+                    ],
+                    "hasArrow": true
+                },
+                "cta": {
+                    "name": "Závěrečná výzva (CTA)",
+                    "background": "primary",
+                    "fields": [
+                        { "name": "cta", "label": "Výzva k akci", "type": "textarea", "maxChars": 80, "required": true },
+                        { "name": "url", "label": "Odkaz", "type": "text", "maxChars": 50, "required": false }
+                    ],
+                    "hasArrow": false
+                }
+            }
+        }
+    ]
+}
