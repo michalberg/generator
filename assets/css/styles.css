@@ -911,8 +911,6 @@ body {
 /* Stripes */
 .stripe {
     position: absolute;
-    background: var(--pink-accent);
-    border-radius: 3px;
     z-index: 1;
     pointer-events: none;
 }
