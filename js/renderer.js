@@ -1,6 +1,6 @@
 import { renderStripes } from './stripes.js';
 
-const LOGO_URL = 'https://petice.online/logo-zeleni-brno.png';
+const DEFAULT_LOGO_URL = 'assets/logos/logo-zeleni-brno.png';
 
 const FONT_CSS = {
     TuskerGrotesk: "'TuskerGrotesk', sans-serif",
@@ -73,18 +73,18 @@ function applyBackground(el, bg) {
     }
 }
 
-function createLogo() {
+function createLogo(logoUrl) {
     const wrap = document.createElement('div');
     wrap.className = 'slide-logo';
     const img = document.createElement('img');
     img.className = 'slide-logo-img';
-    img.src = LOGO_URL;
-    img.alt = 'Zelení Brno';
+    img.src = logoUrl || DEFAULT_LOGO_URL;
+    img.alt = 'Logo';
     img.onerror = () => {
         img.style.display = 'none';
         const fb = document.createElement('div');
         fb.className = 'slide-logo-fallback';
-        fb.innerHTML = '<span class="slide-logo-zeleni">ZELENÍ</span><span class="slide-logo-brno">Brno</span>';
+        fb.innerHTML = '<span class="slide-logo-zeleni">ZELENÍ</span>';
         wrap.appendChild(fb);
     };
     wrap.appendChild(img);
@@ -161,7 +161,7 @@ function esc(str) {
 }
 
 export function renderSlide(container, slide, options = {}) {
-    const { stripes = [], showTram = false, forceHideArrow = false, isStories = false } = options;
+    const { stripes = [], showTram = false, forceHideArrow = false, isStories = false, logoUrl = null } = options;
     const { type, fields = {}, background = null, showLogo = true, showOverlay = false,
             quotePosition = 'bottom', quoteBoxBg = 'green' } = slide;
     const showArrow = forceHideArrow ? false : (slide.showArrow ?? true);
@@ -183,7 +183,7 @@ export function renderSlide(container, slide, options = {}) {
 
         if (fields.title) {
             const titleEl = div('slide-hero-title');
-            titleEl.textContent = fields.title;
+            titleEl.innerHTML = esc(fields.title).replace(/\n/g, '<br>');
             titleEl.style.color = tc;
             applyFieldStyle(titleEl, slide, 'title', sizes.title);
             content.appendChild(titleEl);
@@ -198,7 +198,7 @@ export function renderSlide(container, slide, options = {}) {
         }
 
         container.appendChild(content);
-        if (showLogo) container.appendChild(createLogo());
+        if (showLogo) container.appendChild(createLogo(logoUrl));
         if (showArrow) container.appendChild(createArrow(bg));
 
     } else if (type === 'content') {
@@ -219,7 +219,7 @@ export function renderSlide(container, slide, options = {}) {
         content.appendChild(bodyEl);
 
         container.appendChild(content);
-        if (showLogo) container.appendChild(createLogo());
+        if (showLogo) container.appendChild(createLogo(logoUrl));
         if (showArrow) container.appendChild(createArrow(bg));
 
     } else if (type === 'quote') {
@@ -285,7 +285,7 @@ export function renderSlide(container, slide, options = {}) {
         }
 
         const quoteLogo = showLogo && quotePosition !== 'bottom';
-        if (quoteLogo) container.appendChild(createLogo());
+        if (quoteLogo) container.appendChild(createLogo(logoUrl));
         if (showArrow) container.appendChild(createArrow(bg));
 
     } else if (type === 'stat') {
@@ -316,7 +316,7 @@ export function renderSlide(container, slide, options = {}) {
         }
 
         container.appendChild(content);
-        if (showLogo) container.appendChild(createLogo());
+        if (showLogo) container.appendChild(createLogo(logoUrl));
         if (showArrow) container.appendChild(createArrow(bg));
 
     } else if (type === 'cta') {
@@ -324,7 +324,7 @@ export function renderSlide(container, slide, options = {}) {
 
         if (fields.cta) {
             const ctaEl = div('slide-cta-text');
-            ctaEl.textContent = fields.cta;
+            ctaEl.innerHTML = esc(fields.cta).replace(/\n/g, '<br>');
             ctaEl.style.color = tc;
             applyFieldStyle(ctaEl, slide, 'cta', sizes.cta);
             content.appendChild(ctaEl);
@@ -338,7 +338,7 @@ export function renderSlide(container, slide, options = {}) {
         }
 
         container.appendChild(content);
-        if (showLogo) container.appendChild(createLogo());
+        if (showLogo) container.appendChild(createLogo(logoUrl));
         // CTA nikdy nemá šipku
 
     } else if (type === 'beforeafter') {
@@ -395,7 +395,7 @@ export function renderSlide(container, slide, options = {}) {
         // Footer area so logo/arrow sit in slide background, not over photos
         container.appendChild(div('slide-ba-footer'));
 
-        if (showLogo) container.appendChild(createLogo());
+        if (showLogo) container.appendChild(createLogo(logoUrl));
         if (showArrow) container.appendChild(createArrow(bg));
 
     } else if (type === 'image') {
@@ -446,7 +446,7 @@ export function renderSlide(container, slide, options = {}) {
         }
 
         container.appendChild(photoArea);
-        if (showLogo) container.appendChild(createLogo());
+        if (showLogo) container.appendChild(createLogo(logoUrl));
         if (showArrow) container.appendChild(createArrow(bg));
     }
 

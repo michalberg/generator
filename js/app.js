@@ -4,8 +4,43 @@ import { exportSlide, exportAllSlides } from './export.js';
 
 // ── State ──────────────────────────────────────────────────────────────────
 
+const DEFAULT_SEQUENCE = ['hero', 'content', 'quote', 'stat', 'cta'];
+
+const LOGOS = [
+    { name: 'Zelení (celostátní)', url: 'assets/logos/logo-zeleni.jpg' },
+    { name: 'Zelení Brno',         url: 'assets/logos/logo-zeleni-brno.png' },
+    { name: 'Praha',               url: 'assets/logos/logo-praha.jpg' },
+    { name: 'Praha 2',             url: 'assets/logos/logo-praha2.jpg' },
+    { name: 'Praha 6',             url: 'assets/logos/logo-praha6.jpg' },
+    { name: 'Praha 7',             url: 'assets/logos/logo-praha7.jpg' },
+    { name: 'Praha 10',            url: 'assets/logos/logo-praha10.jpg' },
+    { name: 'Praha 14',            url: 'assets/logos/logo-praha14.jpg' },
+    { name: 'Brno střed',          url: 'assets/logos/logo-brno-stred.jpg' },
+    { name: 'Ostrava',             url: 'assets/logos/logo-ostrava.jpg' },
+    { name: 'Olomouc',             url: 'assets/logos/logo-olomouc.jpg' },
+    { name: 'Český Krumlov',       url: 'assets/logos/logo-cesky-krumlov.jpg' },
+    { name: 'JMK',                 url: 'assets/logos/logo-jmk.jpg' },
+    { name: 'OLK',                 url: 'assets/logos/logo-olk.jpg' },
+    { name: 'MSK',                 url: 'assets/logos/logo-msk.jpg' },
+    { name: 'PAK',                 url: 'assets/logos/logo-pak.jpg' },
+];
+
+const LOGO_COOKIE = 'sg_logo';
+
+function saveLogo(url) {
+    document.cookie = `${LOGO_COOKIE}=${encodeURIComponent(url)};path=/;max-age=${60 * 60 * 24 * 365}`;
+}
+
+function loadLogo() {
+    const match = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith(LOGO_COOKIE + '='));
+    if (!match) return null;
+    const url = decodeURIComponent(match.split('=').slice(1).join('='));
+    return LOGOS.find(l => l.url === url) ? url : null;
+}
+
 const state = {
     format: 'ig-portrait',
+    logo: loadLogo() || LOGOS[0].url,
     slides: [],
     stripes: {},
     showStripes: true,
@@ -15,8 +50,6 @@ const state = {
     dragStartX: 0,
     templates: null
 };
-
-const DEFAULT_SEQUENCE = ['hero', 'content', 'quote', 'stat', 'cta'];
 
 const BG_OPTIONS = {
     green:    'Zelená',
@@ -135,12 +168,32 @@ function buildSidebar() {
     fmtRow.append(fmtSel);
     globalSec.append(fmtRow);
 
+    const logoRow = makeRow('Organizace');
+    const logoLabel = logoRow.querySelector('label');
+    logoLabel.dataset.tooltip = 'Pokud chcete aby bylo v nabídce i vaše logo, pošlete na michal.berg@zeleni.cz požadavek o zařazení loga, s odkazem na vaši stránku na instagramu nebo facebooku, kde máte logo v aktuálním designu dle návodu na http://zeleni.cz/grafika';
+    const logoHint = el('span');
+    logoHint.textContent = 'Není zde vaše logo?';
+    logoHint.className = 'logo-hint';
+    logoLabel.append(logoHint);
+    const logoSel = makeSelect(Object.fromEntries(LOGOS.map(l => [l.url, l.name])), state.logo);
+    logoSel.onchange = () => { state.logo = logoSel.value; saveLogo(logoSel.value); renderAll(); };
+    logoRow.append(logoSel);
+    globalSec.append(logoRow);
+
     const cntRow = makeRow('Počet slidů');
     const cntInput = el('input');
     Object.assign(cntInput, { type: 'number', min: 1, max: 10, value: state.slides.length });
     cntInput.onchange = () => {
         const n = Math.max(1, Math.min(10, parseInt(cntInput.value) || 1));
         cntInput.value = n;
+        if (n < state.slides.length) {
+            const toRemove = state.slides.slice(n);
+            const modifiedCount = toRemove.filter((slide, i) => isSlideModified(slide, n + i)).length;
+            if (modifiedCount > 0) {
+                const ok = confirm(`Odstraníte ${modifiedCount === toRemove.length ? '' : modifiedCount + ' z '}${toRemove.length} slide${toRemove.length > 1 ? 'y' : ''} s vlastním obsahem. Tato akce je nevratná. Chcete pokračovat?`);
+                if (!ok) { cntInput.value = state.slides.length; return; }
+            }
+        }
         resizeSlides(n);
         buildSidebar();
         buildCarouselTrack();
@@ -155,9 +208,9 @@ function buildSidebar() {
 
     // Elementy na pozadí – checkbox + přegenerovat inline
     const regenBtn = el('button');
-    regenBtn.className = 'btn btn-sm btn-regenerate';
+    regenBtn.className = 'btn btn-sm btn-regenerate has-tooltip';
     regenBtn.innerHTML = '🎲';
-    regenBtn.title = 'Přegenerovat';
+    regenBtn.dataset.tooltip = 'Přegenerovat náhodné elementy na pozadí pro všechny slidy';
     regenBtn.disabled = !state.showStripes;
     regenBtn.onclick = () => {
         for (let i = 0; i < state.slides.length; i++) state.stripes[i] = generateStripes();
@@ -831,7 +884,7 @@ function renderAll() {
     state.slides.forEach((slide, i) => {
         const slideEl = document.getElementById(`slide-preview-${i}`);
         if (!slideEl) return;
-        renderSlide(slideEl, slide, { stripes: slideStripes(slide, i), showTram: state.showTram, forceHideArrow, isStories });
+        renderSlide(slideEl, slide, { stripes: slideStripes(slide, i), showTram: state.showTram, forceHideArrow, isStories, logoUrl: state.logo });
     });
     goToSlide(state.currentSlide);
 }
@@ -841,7 +894,15 @@ function renderCurrentSlide() {
     const slide = state.slides[i];
     const slideEl = document.getElementById(`slide-preview-${i}`);
     if (!slideEl) return;
-    renderSlide(slideEl, slide, { stripes: slideStripes(slide, i), showTram: state.showTram, forceHideArrow: isFbFormat(), isStories: state.format === 'ig-stories' });
+    renderSlide(slideEl, slide, { stripes: slideStripes(slide, i), showTram: state.showTram, forceHideArrow: isFbFormat(), isStories: state.format === 'ig-stories', logoUrl: state.logo });
+}
+
+function isSlideModified(slide, index) {
+    const defaults = makeSlide(slide.type, index).fields;
+    return Object.entries(slide.fields).some(([key, val]) => {
+        if (!val) return false;
+        return val !== defaults[key];
+    });
 }
 
 function resizeSlides(n) {

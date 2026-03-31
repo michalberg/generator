@@ -291,6 +291,74 @@ body {
     font-size: 12px;
     font-weight: 500;
     color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logo-hint {
+    font-size: 11px;
+    color: var(--gray-400);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    cursor: help;
+    white-space: nowrap;
+}
+
+.form-row label:has(.logo-hint) {
+    position: relative;
+}
+
+.form-row label:has(.logo-hint)::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    background: #222;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: 4px;
+    white-space: normal;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.form-row label:has(.logo-hint):hover::after {
+    opacity: 1;
+}
+
+.has-tooltip {
+    position: relative;
+}
+
+.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    width: 220px;
+    background: #222;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: 4px;
+    white-space: normal;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.has-tooltip:hover::after {
+    opacity: 1;
 }
 
 .form-row select,
@@ -1251,7 +1319,7 @@ body {
     color: #000000;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
-    padding: 2px 10px;
+    padding: 2px 10px 6px;
     display: inline;
 }
 
