@@ -10,7 +10,7 @@ const FONT_CSS = {
 
 // Default font sizes (px) for the 420px-wide preview element
 const DEFAULT_SIZES = {
-    hero:    { title: 60, subtitle: 26 },
+    hero:    { title: 50, subtitle: 26 },
     content: { title: 36, body: 26 },
     quote:   { quote: 26, author: 16, role: 13 },
     stat:    { number: 80, unit: 26, description: 26 },

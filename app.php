@@ -31,6 +31,7 @@ $_SESSION['login_time'] = time();
         <h1>Generátor pro Instagram</h1>
     </div>
     <div class="app-header-right">
+        <a href="manual.php" class="btn-manual">Doporučení pro FB/IG</a>
         <a href="logout.php" class="btn-logout">Odhlásit se</a>
     </div>
 </header>
@@ -38,6 +39,10 @@ $_SESSION['login_time'] = time();
 <div class="app-body">
 
     <aside class="sidebar" id="sidebar">
+        <!-- Built by JS -->
+    </aside>
+
+    <aside class="tips-panel" id="tips-panel">
         <!-- Built by JS -->
     </aside>
 

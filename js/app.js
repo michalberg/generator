@@ -71,7 +71,7 @@ const DEFAULT_FONTS = {
 };
 
 const DEFAULT_SIZES = {
-    hero:    { title: 60, subtitle: 26 },
+    hero:    { title: 50, subtitle: 26 },
     content: { title: 36, body: 26 },
     quote:   { quote: 26, author: 16, role: 13 },
     stat:    { number: 80, unit: 26, description: 26 },
@@ -827,6 +827,7 @@ function goToSlide(i) {
     document.querySelectorAll('.ig-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
     updateNavBtns();
     if (state.format === 'ig-stories') updateStoriesOverlay();
+    renderTipsPanel();
 }
 
 function updateNavBtns() {
@@ -993,6 +994,186 @@ function makeCheckRow(label, checked, onChange) {
     chk.onchange = () => onChange(chk.checked);
     row.append(chk, document.createTextNode(label));
     return row;
+}
+
+// ── Tips panel ─────────────────────────────────────────────────────────────
+
+const SLIDE_TIPS = {
+    hero: {
+        title: 'Slide 1: Úvodní hook',
+        rules: [
+            'Max 8–10 slov v nadpisu',
+            'Začněte problémem, NE řešením',
+            'Podnadpis přidává napětí',
+        ],
+        examples: {
+            label: 'Návrhy hooků',
+            cols: ['Nadpis', 'Podnadpis'],
+            rows: [
+                ['Víc pruhů, víc aut, stejné kolony',                        'Proč to tak je?'],
+                ['30 % rozpočtu na silnice, 2 % na cyklostezky',             'A prý nejsou peníze'],
+                ['Co opravdu pomáhá proti hluku',                            'A nejsou to protihluková okna'],
+                ['Více než 1000 lidí v Brně podepsalo petici',               'Protože jsme řekli nahlas, co si všichni myslí'],
+                ['5 věcí, které jsem zjistila jako zastupitelka',            'Když se jednalo o dopravě'],
+                ['Po 4 letech v zastupitelstvu už vím, proč se věci nemění', 'A není to nedostatkem peněz'],
+                ['Absurdní nápad na řešení parkování, kterému nikdo nevěřil','Dokud nezačal fungovat v Kodani'],
+                ['Děti si prý nehrají venku a sedí jen u počítačů',          'A viděli jste, jak bezpečné jsou ulice?'],
+                ['Proč si mladí v Brně nekoupí byt',                         'A není to tím, že málo pracují'],
+            ],
+        },
+    },
+    content: {
+        title: 'Slide 2: Textový obsah',
+        rules: [
+            'Jedna myšlenka na slide',
+            'Nadpis = tvrzení, text = vysvětlení',
+            'Dlouhý text rozdělte na více slidů',
+            'Krátké věty, max 3–4 řádky textu',
+        ],
+        examples: {
+            label: 'Příklady (téma: Hluk)',
+            cols: ['Nadpis', 'Text'],
+            rows: [
+                ['Co opravdu pomáhá?',    'Zpomalit auta. 50 km/h je 2× hlasitější než 30 km/h.'],
+                ['Proč okna nefungují',   'Okna řeší následky, ne příčinu. A v létě je stejně otevřete.'],
+                ['Co funguje jinde',      'Zóny 30, stromy podél silnic, tichý asfalt.'],
+                ['Co navrhujeme',         '1. Rozšířit zóny 30\n2. Výsadba stromořadí\n3. Tichý povrch na hlavních tazích'],
+            ],
+        },
+        examples2: {
+            label: 'Příklady (téma: Parkování v Kodani)',
+            cols: ['Nadpis', 'Text'],
+            rows: [
+                ['Co udělali?',       'Každý rok ubrali 2–3 % parkovacích míst v centru. Postupně. 40 let.'],
+                ['Co se stalo',       'Lidé začali jezdit jinak. MHD, kola, pěšky. Obchody nezkrachovaly.'],
+                ['Výsledek',          'O 50 % méně aut v centru. Vyšší tržby obchodů. Čistší vzduch.'],
+                ['Proč to funguje',   'Lidé si poradí. Ale musí mít alternativu.'],
+            ],
+        },
+    },
+    quote: {
+        title: 'Slide 3: Fotka s citací',
+        rules: [
+            'Citace max 15–20 slov',
+            'Fotka z terénu, ne studiový portrét',
+            'Uvést jméno + funkci',
+        ],
+        examples: {
+            label: 'Příklady citací',
+            cols: ['Typ', 'Příklad'],
+            rows: [
+                ['Osobní zkušenost',    '"Bydlím tady 20 let a nikdy to nebylo takhle špatné."'],
+                ['Motivace kandidáta',  '"Rozhodla jsem se kandidovat, protože jsem už nechtěla jen přihlížet."'],
+                ['Reakce na problém',   '"Každé ráno vezeme děti autem, protože jinak to nejde."'],
+            ],
+        },
+    },
+    image: {
+        title: 'Slide 4: Obrázek s titulkem',
+        rules: [
+            'Fotka musí být výmluvná sama o sobě',
+            'Titulek stručně kontextualizuje',
+        ],
+        examples: {
+            label: 'Příklady',
+            cols: ['Typ', 'Titulek', 'Popisek'],
+            rows: [
+                ['Dokumentace problému', 'Tady stával strom',             'Vykácen kvůli parkování. Náhrada? Žádná.'],
+                ['Reportáž',             '200 lidí přišlo na setkání',    'A radnice tvrdí, že to lidi nezajímá.'],
+                ['Vizualizace',          'Jak by to mohlo vypadat',       'Návrh od architektů z iniciativy XY.'],
+            ],
+        },
+    },
+    beforeafter: {
+        title: 'Slide 5: Před / Po',
+        rules: [
+            'Obě fotky ideálně ze stejného úhlu',
+            'Jasně označit PŘED a PO',
+            'Nadpis pojmenovává změnu',
+        ],
+        examples: {
+            label: 'Příklady',
+            cols: ['Nadpis', 'Před', 'Po'],
+            rows: [
+                ['Kodaň 1980 vs. 2024',        'Ucpaná auta',      'Cyklostezky, pěší'],
+                ['Jak by to mohlo vypadat', 'Současný stav',    'Vizualizace návrhu'],
+            ],
+        },
+    },
+    stat: {
+        title: 'Slide 6: Statistika',
+        rules: [
+            'Velké číslo dominuje',
+            'Jasná jednotka',
+            'Krátký kontext',
+        ],
+        examples: {
+            label: 'Příklady (číslo / jednotka / kontext)',
+            cols: ['Číslo', 'Jednotka', 'Kontext'],
+            rows: [
+                ['8 °C',  'rozdíl teplot', 'mezi ulicí a parkem v létě'],
+                ['−50 %', 'méně aut',      'v centru Kodaně za 40 let'],
+                ['2×',    'hlasitější',    'je auto při 50 km/h než při 30 km/h'],
+            ],
+        },
+    },
+    cta: {
+        title: 'Slide 7: Závěrečná výzva (CTA)',
+        rules: [
+            'Vždy obsahuje výzvu k akci',
+            'Buďte konkrétní',
+            'Jeden hlavní CTA',
+        ],
+        examples: {
+            label: 'Příklady výzev',
+            cols: ['Cíl', 'Text'],
+            rows: [
+                ['Sdílení',   'Pošli tomu, kdo řeší parkování ve tvé čtvrti'],
+                ['Uložení',   'Ulož si, ať víš, co žádat od radnice'],
+                ['Kombinace', 'Ulož si a pošli dál, ať to vidí víc lidí'],
+                ['Diskuze',   'Napiš do komentáře: Jak to vypadá ve tvé ulici?'],
+                ['Petice',    'Podepiš petici: odkaz v biu'],
+            ],
+        },
+    },
+};
+
+function renderExamplesTable(ex) {
+    if (!ex) return '';
+    let html = `<div class="tips-section-title">${ex.label}</div>`;
+    html += `<table class="tips-table"><thead><tr>${ex.cols.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+    html += ex.rows.map(row =>
+        `<tr>${row.map((cell, i) =>
+            `<td class="tips-hook${i > 0 ? ' tips-sub' : ''}">${cell.replace(/\n/g, '<br>')}</td>`
+        ).join('')}</tr>`
+    ).join('');
+    html += '</tbody></table>';
+    return html;
+}
+
+function renderTipsPanel() {
+    const panel = document.getElementById('tips-panel');
+    if (!panel) return;
+    const slide = state.slides[state.currentSlide];
+    const tips = slide ? SLIDE_TIPS[slide.type] : null;
+
+    if (!tips) {
+        panel.innerHTML = '<p class="tips-empty">Pro tento typ slidu zatím nejsou tipy k dispozici.</p>';
+        return;
+    }
+
+    let html = `<div class="tips-header">${tips.title}</div>`;
+
+    if (tips.rules?.length) {
+        html += '<div class="tips-section-title">Pravidla</div><ul class="tips-rules">';
+        html += tips.rules.map(r => `<li>${r}</li>`).join('');
+        html += '</ul>';
+    }
+
+    html += renderExamplesTable(tips.examples);
+    if (tips.examples2) html += renderExamplesTable(tips.examples2);
+
+    panel.innerHTML = html;
 }
 
 init();
