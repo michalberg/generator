@@ -72,10 +72,19 @@ export function generateStripes() {
     const shapes = [];
     const placed = []; // centers of placed shapes for overlap check
 
-    // rect appears more often – matches brand's primary decorative element
-    const TYPES  = ['rect', 'rect', 'rect', 'circle', 'triangle', 'asterisk'];
-    const COLORS = ['pink', 'pink', 'pink', 'gray', 'gray'];
+    const TYPES   = ['rect', 'rect', 'rect', 'circle', 'triangle'];
     const MIN_DIST = 22; // minimum center-to-center distance in %
+
+    // Pre-build a shuffled color pool: 75 % pink, 25 % gray
+    const pinkCount = Math.round(count * 0.75);
+    const colorPool = [
+        ...Array(pinkCount).fill('pink'),
+        ...Array(count - pinkCount).fill('gray'),
+    ];
+    for (let i = colorPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [colorPool[i], colorPool[j]] = [colorPool[j], colorPool[i]];
+    }
 
     for (const cell of buildCandidateGrid()) {
         if (shapes.length >= count) break;
@@ -96,13 +105,13 @@ export function generateStripes() {
             w = rInt(sp.rect[0], sp.rect[1]);
             h = rInt(sp.rect[2], sp.rect[3]);
         } else {
-            const s = rInt(sp.other[0], sp.other[1]);
-            w = s; h = s;
+            // circle and triangle: use only width, height handled by CSS aspect-ratio
+            w = rInt(sp.other[0], sp.other[1]);
+            h = w;
         }
 
-        const hasRotation = type !== 'circle' && type !== 'asterisk';
-        const rotation = hasRotation ? rInt(-45, 45) : 0;
-        const color    = COLORS[Math.floor(Math.random() * COLORS.length)];
+        const rotation = type === 'circle' ? 0 : rInt(-45, 45);
+        const color    = colorPool[shapes.length];
 
         shapes.push({ type, w, h, x: cx - w / 2, y: cy - h / 2, rotation, color });
         placed.push({ x: cx, y: cy });
@@ -118,34 +127,22 @@ export function renderStripes(container, stripes) {
         const col = COLOR_VALUES[s.color] || COLOR_VALUES.pink;
         let el;
 
-        if (s.type === 'asterisk') {
-            // SVG asterisk: 4 lines at 0°/45°/90°/135° → 8-armed star
-            el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            el.setAttribute('viewBox', '0 0 100 100');
-            el.setAttribute('class', 'stripe stripe-asterisk');
-            const angles = [0, 45, 90, 135];
-            el.innerHTML = angles.map(a => {
-                const rad = a * Math.PI / 180;
-                const cos = Math.cos(rad), sin = Math.sin(rad);
-                return `<line x1="${50 - 44 * cos}" y1="${50 - 44 * sin}"
-                              x2="${50 + 44 * cos}" y2="${50 + 44 * sin}"
-                              stroke="${col}" stroke-width="13" stroke-linecap="round"/>`;
-            }).join('');
-        } else {
-            el = document.createElement('div');
-            el.className = 'stripe stripe-' + s.type;
-            el.style.background = col;
+        el = document.createElement('div');
+        el.className = 'stripe stripe-' + s.type;
+        el.style.background = col;
 
-            if (s.type === 'circle') {
-                el.style.borderRadius = '50%';
-            } else if (s.type === 'triangle') {
-                el.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
-            }
+        if (s.type === 'circle') {
+            el.style.borderRadius = '50%';
+            // aspect-ratio ensures a true circle regardless of slide proportions
+            el.style.aspectRatio  = '1 / 1';
+        } else if (s.type === 'triangle') {
+            el.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
         }
 
         el.style.position        = 'absolute';
         el.style.width           = s.w + '%';
-        el.style.height          = s.h + '%';
+        // For circles, height is driven by aspect-ratio; set it for other shapes
+        if (s.type !== 'circle') el.style.height = s.h + '%';
         el.style.left            = s.x + '%';
         el.style.top             = s.y + '%';
         el.style.transform       = `rotate(${s.rotation}deg)`;
