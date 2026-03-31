@@ -133,7 +133,10 @@ function applyFieldStyle(el, slide, fieldName, defaultSize) {
     el.style.width     = '100%';
     el.style.textAlign = align;
     if (lineHeight) el.style.lineHeight = lineHeight;
-    if (font && FONT_CSS[font]) el.style.fontFamily = FONT_CSS[font];
+    if (font && FONT_CSS[font]) {
+        el.style.fontFamily = FONT_CSS[font];
+        el.style.textTransform = font === 'TuskerGrotesk' ? 'uppercase' : 'none';
+    }
     if (color) el.style.color = color;
 
     if (whiteBg) {

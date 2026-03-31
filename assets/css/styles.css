@@ -1,6 +1,7 @@
 @font-face {
     font-family: 'TuskerGrotesk';
-    src: url('https://petice.online/fonty/TuskerGrotesk-5800Super.woff2') format('woff2');
+    src: url('https://petice.online/fonty/TuskerGrotesk-5700Bold.woff2') format('woff2'),
+         url('https://petice.online/fonty/TuskerGrotesk-5700Bold.woff') format('woff');
     font-weight: 900;
     font-style: normal;
 }
@@ -1018,6 +1019,7 @@ body {
     line-height: 1.33;
     word-break: break-word;
     letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .slide-hero-subtitle {
@@ -1039,6 +1041,7 @@ body {
     margin-bottom: 14px;
     word-break: break-word;
     letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .slide-content-body {
@@ -1166,6 +1169,7 @@ body {
     line-height: .9;
     color: var(--black);
     letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .slide-stat-unit {
@@ -1197,6 +1201,7 @@ body {
     line-height: 1.05;
     word-break: break-word;
     letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .slide-cta-url {

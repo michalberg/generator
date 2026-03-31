@@ -458,10 +458,11 @@ function buildFieldToolbar(slide, fieldName, fieldType) {
     });
     toolbar.append(alignWrap);
 
-    // Font picker – wbGroup se odkazuje přes closure (je vytvořen níže)
+    // Font picker – wbGroup a wbBtn se odkazují přes closure (jsou vytvořeny níže)
     const fontWrap = el('div');
     fontWrap.className = 'toolbar-group';
     let wbGroup = null;
+    let wbBtn = null;
     [['TuskerGrotesk','T'], ['SVGDEurotype','E'], ['UrbanGrotesk','U']].forEach(([val, label]) => {
         const btn = el('button');
         btn.className = 'toolbar-btn' + (currentFont === val ? ' active' : '');
@@ -473,6 +474,11 @@ function buildFieldToolbar(slide, fieldName, fieldType) {
                 b.classList.toggle('active', ['TuskerGrotesk','SVGDEurotype','UrbanGrotesk'][i] === val);
             });
             if (wbGroup) wbGroup.style.display = val === 'SVGDEurotype' ? '' : 'none';
+            // Při přepnutí pryč z Euro automaticky vypnout bílé pozadí
+            if (val !== 'SVGDEurotype') {
+                setFieldStyle(slide, fieldName, 'whiteBg', false);
+                if (wbBtn) { wbBtn.classList.remove('active'); wbBtn.textContent = '☐'; }
+            }
             renderCurrentSlide();
         };
         fontWrap.append(btn);
@@ -555,7 +561,7 @@ function buildFieldToolbar(slide, fieldName, fieldType) {
     wbGroup = el('div');
     wbGroup.className = 'toolbar-group';
     wbGroup.style.display = currentFont === 'SVGDEurotype' ? '' : 'none';
-    const wbBtn = el('button');
+    wbBtn = el('button');
     wbBtn.className = 'toolbar-btn' + (currentWhtBg ? ' active' : '');
     wbBtn.title = 'Bílé pozadí pod textem (jen neprázdné řádky)';
     wbBtn.textContent = currentWhtBg ? '☑' : '☐';
