@@ -29,9 +29,9 @@ $_SESSION['login_time'] = time();
     <div class="app-header-logo">
         <span class="logo-zeleni">ZELENÍ</span>
         <h1>Generátor pro Instagram</h1>
+        <a href="manual.php" class="btn-manual">Doporučení pro FB/IG</a>
     </div>
     <div class="app-header-right">
-        <a href="manual.php" class="btn-manual">Doporučení pro FB/IG</a>
         <button class="btn-logout" id="btn-clear-state">Vymazat obsah</button>
         <a href="logout.php" class="btn-logout">Odhlásit se</a>
     </div>
