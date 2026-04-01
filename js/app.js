@@ -1018,7 +1018,18 @@ function bindGlobalEvents() {
                 };
             }));
 
-            const payload = { format: state.format, logo: state.logo, slides };
+            const FORMAT_SIZES = {
+                'ig-portrait': { width: 1080, height: 1350 },
+                'ig-square':   { width: 1080, height: 1080 },
+                'ig-stories':  { width: 1080, height: 1920 },
+                'facebook':    { width: 1200, height: 900  },
+            };
+            const payload = {
+                format: state.format,
+                ...FORMAT_SIZES[state.format],
+                logo: state.logo,
+                slides,
+            };
             await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
             btn.textContent = '✓ Zkopírováno!';
             setTimeout(() => { btn.textContent = 'Kopírovat JSON pro Remotion'; }, 2000);
