@@ -989,6 +989,21 @@ function bindGlobalEvents() {
         }
     };
 
+    document.getElementById('input-import-json').onchange = function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                __importState(JSON.parse(e.target.result));
+            } catch (err) {
+                alert('Chyba při načítání JSON: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+        this.value = '';
+    };
+
     window.addEventListener('resize', () => {
         if (state.format === 'ig-stories') updateCarouselFormat();
     });

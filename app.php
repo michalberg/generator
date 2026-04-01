@@ -58,6 +58,7 @@ $_SESSION['login_time'] = time();
             <button class="btn btn-secondary" id="btn-export-current">Exportovat slide</button>
             <button class="btn btn-primary" id="btn-export-all">Exportovat vše ZIP</button>
             <button class="btn btn-remotion" id="btn-copy-json" title="Zkopíruje JSON do schránky pro import do Remotion">Kopírovat JSON pro Remotion</button>
+            <label class="btn btn-secondary" id="btn-import-json" title="Načte carousel z JSON souboru">Načíst JSON<input type="file" accept=".json" style="display:none" id="input-import-json"></label>
         </div>
     </main>
 
