@@ -90,12 +90,53 @@ const DEFAULT_ALIGNS = {
     beforeafter: { title: 'left',   labelBefore: 'left', labelAfter: 'right' }
 };
 
+// ── LocalStorage persistence ────────────────────────────────────────────────
+
+const LS_KEY = 'sg_state';
+
+function saveState() {
+    try {
+        const data = {
+            format: state.format,
+            logo:   state.logo,
+            slides: state.slides.map(s => ({
+                type:          s.type,
+                background:    s.background,
+                fields:        s.fields,
+                fieldStyles:   s.fieldStyles,
+                showLogo:      s.showLogo,
+                showArrow:     s.showArrow,
+                quotePosition: s.quotePosition,
+                quoteBoxBg:    s.quoteBoxBg,
+            })),
+        };
+        localStorage.setItem(LS_KEY, JSON.stringify(data));
+    } catch (e) { /* quota exceeded — ignore */ }
+}
+
+function loadSavedState() {
+    try {
+        const raw = localStorage.getItem(LS_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+}
+
+function clearSavedState() {
+    localStorage.removeItem(LS_KEY);
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 
 async function init() {
     const res = await fetch('templates/templates.json');
     state.templates = await res.json();
-    initSlides(5);
+
+    const saved = loadSavedState();
+    if (saved) {
+        __importState(saved);
+    } else {
+        initSlides(5);
+    }
     buildSidebar();
     buildIgFrame();
     renderAll();
@@ -888,6 +929,7 @@ function renderAll() {
         renderSlide(slideEl, slide, { stripes: slideStripes(slide, i), showTram: state.showTram, forceHideArrow, isStories, logoUrl: state.logo });
     });
     goToSlide(state.currentSlide);
+    saveState();
 }
 
 function renderCurrentSlide() {
@@ -987,6 +1029,15 @@ function bindGlobalEvents() {
         } finally {
             btn.disabled = false;
         }
+    };
+
+    document.getElementById('btn-clear-state').onclick = () => {
+        if (!confirm('Vymazat celý obsah a začít znovu?')) return;
+        clearSavedState();
+        initSlides(5);
+        buildSidebar();
+        buildIgFrame();
+        renderAll();
     };
 
     document.getElementById('input-import-json').onchange = function() {
