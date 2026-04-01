@@ -942,10 +942,81 @@ function bindGlobalEvents() {
         } finally { btn.disabled = false; btn.textContent = 'Exportovat vše ZIP'; }
     };
 
+    document.getElementById('btn-copy-json').onclick = async () => {
+        const btn = document.getElementById('btn-copy-json');
+        btn.disabled = true;
+        btn.textContent = 'Nahrávám obrázky...';
+
+        async function uploadIfNeeded(dataUrl) {
+            if (!dataUrl || !dataUrl.startsWith('data:')) return dataUrl;
+            const res = await fetch('upload.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: dataUrl }),
+            });
+            const json = await res.json();
+            return json.url || dataUrl;
+        }
+
+        try {
+            const slides = await Promise.all(state.slides.map(async s => {
+                const fields = { ...s.fields };
+                if (fields.photoData)   fields.photoData   = await uploadIfNeeded(fields.photoData);
+                if (fields.photoBefore) fields.photoBefore = await uploadIfNeeded(fields.photoBefore);
+                if (fields.photoAfter)  fields.photoAfter  = await uploadIfNeeded(fields.photoAfter);
+                return {
+                    type:          s.type,
+                    background:    s.background,
+                    fields,
+                    fieldStyles:   s.fieldStyles,
+                    showLogo:      s.showLogo,
+                    showArrow:     s.showArrow,
+                    quotePosition: s.quotePosition,
+                    quoteBoxBg:    s.quoteBoxBg,
+                };
+            }));
+
+            const payload = { format: state.format, logo: state.logo, slides };
+            await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+            btn.textContent = '✓ Zkopírováno!';
+            setTimeout(() => { btn.textContent = 'Kopírovat JSON pro Remotion'; }, 2000);
+        } catch (e) {
+            btn.textContent = '✗ Chyba!';
+            setTimeout(() => { btn.textContent = 'Kopírovat JSON pro Remotion'; }, 3000);
+            console.error('JSON export failed:', e);
+        } finally {
+            btn.disabled = false;
+        }
+    };
+
     window.addEventListener('resize', () => {
         if (state.format === 'ig-stories') updateCarouselFormat();
     });
 }
+
+// ── Console import helper ───────────────────────────────────────────────────
+// Usage: __importState(jsonString)
+window.__importState = function(jsonString) {
+    const data = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
+    state.format = data.format || state.format;
+    state.logo   = data.logo   || state.logo;
+    state.slides = data.slides.map((s, i) => {
+        const base = makeSlide(s.type, i);
+        return {
+            ...base,
+            ...s,
+            fields:      { ...base.fields,      ...s.fields },
+            fieldStyles: { ...base.fieldStyles,  ...s.fieldStyles },
+        };
+    });
+    state.stripes = {};
+    state.slides.forEach((_, i) => { state.stripes[i] = generateStripes(); });
+    state.currentSlide = 0;
+    buildIgFrame();
+    renderAll();
+    buildSidebar();
+    console.log(`Načteno ${state.slides.length} slidů.`);
+};
 
 function exportPrefix() {
     const first = state.slides[0];

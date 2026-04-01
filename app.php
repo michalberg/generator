@@ -57,6 +57,7 @@ $_SESSION['login_time'] = time();
             <span class="slide-counter" id="slide-counter"></span>
             <button class="btn btn-secondary" id="btn-export-current">Exportovat slide</button>
             <button class="btn btn-primary" id="btn-export-all">Exportovat vše ZIP</button>
+            <button class="btn btn-remotion" id="btn-copy-json" title="Zkopíruje JSON do schránky pro import do Remotion">Kopírovat JSON pro Remotion</button>
         </div>
     </main>
 
