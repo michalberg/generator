@@ -90,6 +90,107 @@ const DEFAULT_ALIGNS = {
     beforeafter: { title: 'left',   labelBefore: 'left', labelAfter: 'right' }
 };
 
+// ── Remotion JSON enrichment ────────────────────────────────────────────────
+
+const BG_HEX = { green: '#0bd26f', white: '#ffffff', pink: '#ffa6d1', black: '#000000' };
+const BG_GRADIENT = 'linear-gradient(160deg, #0bd26f 0%, #067a40 100%)';
+
+function remotionTextColor(bg) {
+    return (bg === 'black' || bg === 'gradient') ? '#ffffff' : '#000000';
+}
+
+// Extra per-field defaults not tracked in state (weight, letterSpacing, lineHeight)
+const FIELD_EXTRAS = {
+    hero:    { title: { weight: 900, lineHeight: 1.33, letterSpacing: '0.02em' }, subtitle: { weight: 500, lineHeight: 1.4 } },
+    content: { title: { weight: 900, lineHeight: 1.1,  letterSpacing: '0.02em' }, body:     { weight: 400, lineHeight: 1.6 } },
+    quote:   { quote:  { weight: 600, lineHeight: 1.35 }, author: { weight: 600 }, role: { weight: 400 } },
+    stat:    { number: { weight: 900, lineHeight: 0.9,  letterSpacing: '0.02em' }, unit: { weight: 600 }, description: { weight: 400, lineHeight: 1.5, maxWidth: 864 } },
+    cta:     { cta:    { weight: 900, lineHeight: 1.05, letterSpacing: '0.02em' }, url:  { weight: 600 } },
+    image:       { title: { weight: 900, lineHeight: 1.05, letterSpacing: '0.02em' }, caption:     { weight: 600 } },
+    beforeafter: { title: { weight: 900, lineHeight: 1.05, letterSpacing: '0.02em' }, labelBefore: { weight: 600 }, labelAfter: { weight: 600 } },
+};
+
+// Layout at 1080px reference width (% → px)
+const SLIDE_LAYOUT = {
+    hero:        { contentAlign: 'center', paddingX: 76, paddingTop: 76,  gap: 12 },
+    content:     { contentAlign: 'top',    paddingX: 76, paddingTop: 108, gap: 16 },
+    stat:        { contentAlign: 'center', paddingX: 76, paddingTop: 76,  gap: 4  },
+    cta:         { contentAlign: 'center', paddingX: 76, paddingTop: 76,  gap: 16 },
+    quote:       { contentAlign: 'bottom', paddingX: 76, paddingTop: 76,  gap: 8  },
+    image:       { contentAlign: 'top',    paddingX: 65, paddingTop: 65,  gap: 16 },
+    beforeafter: { contentAlign: 'top',    paddingX: 65, paddingTop: 54,  gap: 0  },
+};
+
+function buildEnrichedSlides(uploadedSlides) {
+    return uploadedSlides.map((s, i) => {
+        const { type, background: bg } = s;
+        const tc = remotionTextColor(bg);
+        const extras = FIELD_EXTRAS[type] || {};
+
+        // Enrich fieldStyles
+        const fieldStyles = {};
+        for (const [fieldName, ext] of Object.entries(extras)) {
+            const user = (s.fieldStyles || {})[fieldName] || {};
+            const font = user.font ?? DEFAULT_FONTS[type]?.[fieldName] ?? 'UrbanGrotesk';
+            const size = user.size ?? DEFAULT_SIZES[type]?.[fieldName] ?? 16;
+            const align = user.align ?? DEFAULT_ALIGNS[type]?.[fieldName] ?? 'left';
+            const whiteBg = user.whiteBg ?? false;
+            const entry = {
+                size,
+                font,
+                weight: ext.weight ?? 400,
+                color: whiteBg ? '#000000' : (user.color ?? tc),
+                align,
+            };
+            if (ext.lineHeight)    entry.lineHeight    = user.lineHeight ?? ext.lineHeight;
+            if (ext.letterSpacing) entry.letterSpacing = ext.letterSpacing;
+            if (whiteBg)           entry.whiteBg = true, entry.bgPadding = [4, 10];
+            if (ext.maxWidth)      entry.maxWidth = ext.maxWidth;
+            fieldStyles[fieldName] = entry;
+        }
+
+        // Layout
+        const layout = { ...SLIDE_LAYOUT[type] };
+        if (type === 'quote') {
+            const pos = s.quotePosition || 'bottom';
+            layout.contentAlign = pos === 'top' ? 'top' : pos === 'bottom' ? 'bottom' : 'center';
+        }
+
+        // Image layout
+        const imageLayout = type === 'quote'       ? { position: s.quotePosition || 'bottom', fullBackground: true }
+                          : type === 'image'        ? { heightPercent: 50 }
+                          : type === 'beforeafter'  ? { heightPercent: 60 }
+                          : null;
+
+        // Background shapes
+        const shapes = (state.stripes[i] || []).map(sh => ({
+            type:     sh.type,
+            x:        sh.x,
+            y:        sh.y,
+            w:        sh.w,
+            h:        sh.h,
+            rotation: sh.rotation,
+            color:    sh.color === 'pink' ? '#ffa6d1' : '#d9d9d9',
+        }));
+
+        const slide = {
+            type,
+            background:    bg,
+            backgroundColor: bg === 'gradient' ? null : (BG_HEX[bg] ?? BG_HEX.green),
+            layout,
+            fields:        s.fields,
+            fieldStyles,
+            showLogo:      s.showLogo,
+            showArrow:     s.showArrow,
+            shapes,
+        };
+        if (bg === 'gradient') slide.backgroundGradient = BG_GRADIENT;
+        if (imageLayout) slide.imageLayout = imageLayout;
+        if (type === 'quote') { slide.quotePosition = s.quotePosition; slide.quoteBoxBg = s.quoteBoxBg; }
+        return slide;
+    });
+}
+
 // ── LocalStorage persistence ────────────────────────────────────────────────
 
 const LS_KEY = 'sg_state';
@@ -1001,34 +1102,29 @@ function bindGlobalEvents() {
         }
 
         try {
-            const slides = await Promise.all(state.slides.map(async s => {
-                const fields = { ...s.fields };
-                if (fields.photoData)   fields.photoData   = await uploadIfNeeded(fields.photoData);
-                if (fields.photoBefore) fields.photoBefore = await uploadIfNeeded(fields.photoBefore);
-                if (fields.photoAfter)  fields.photoAfter  = await uploadIfNeeded(fields.photoAfter);
-                return {
-                    type:          s.type,
-                    background:    s.background,
-                    fields,
-                    fieldStyles:   s.fieldStyles,
-                    showLogo:      s.showLogo,
-                    showArrow:     s.showArrow,
-                    quotePosition: s.quotePosition,
-                    quoteBoxBg:    s.quoteBoxBg,
-                };
-            }));
-
             const FORMAT_SIZES = {
                 'ig-portrait': { width: 1080, height: 1350 },
                 'ig-square':   { width: 1080, height: 1080 },
                 'ig-stories':  { width: 1080, height: 1920 },
                 'facebook':    { width: 1200, height: 900  },
             };
+
+            // Upload base64 photos, then enrich all slide data
+            const uploadedSlides = await Promise.all(state.slides.map(async s => ({
+                ...s,
+                fields: {
+                    ...s.fields,
+                    ...(s.fields.photoData   ? { photoData:   await uploadIfNeeded(s.fields.photoData)   } : {}),
+                    ...(s.fields.photoBefore ? { photoBefore: await uploadIfNeeded(s.fields.photoBefore) } : {}),
+                    ...(s.fields.photoAfter  ? { photoAfter:  await uploadIfNeeded(s.fields.photoAfter)  } : {}),
+                },
+            })));
+
             const payload = {
                 format: state.format,
                 ...FORMAT_SIZES[state.format],
                 logo: state.logo,
-                slides,
+                slides: buildEnrichedSlides(uploadedSlides),
             };
             await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
             btn.textContent = '✓ Zkopírováno!';
