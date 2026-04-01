@@ -170,7 +170,7 @@ export function renderSlide(container, slide, options = {}) {
     const tc = textColor(bg);
 
     container.innerHTML = '';
-    container.className = 'slide-el' + (showTram ? ' has-tram' : '') + (isStories ? ' format-stories' : '');
+    container.className = 'slide-el slide-type-' + type + (showTram ? ' has-tram' : '') + (isStories ? ' format-stories' : '');
     applyBackground(container, bg);
 
     const baseSizes = DEFAULT_SIZES[type] || {};

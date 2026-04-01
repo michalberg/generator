@@ -959,6 +959,11 @@ body {
     padding-top: 28%;
     justify-content: flex-start;
 }
+.slide-el.format-stories.slide-type-stat .slide-content-center {
+    justify-content: center;
+    padding-top: 24%;
+    padding-bottom: 30%;
+}
 .slide-el.format-stories .slide-content-top {
     padding-top: 24%;
 }
