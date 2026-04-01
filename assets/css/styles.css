@@ -956,7 +956,8 @@ body {
     padding-top: 24%;
 }
 .slide-el.format-stories .slide-content-center {
-    padding-top: 24%;
+    padding-top: 28%;
+    justify-content: flex-start;
 }
 .slide-el.format-stories .slide-content-top {
     padding-top: 24%;
