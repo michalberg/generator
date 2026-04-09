@@ -15,6 +15,9 @@ if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time'] > SESSIO
 
 $_SESSION['login_time'] = time();
 $markdown = file_get_contents(__DIR__ . '/manual-social-media-zeleni-2026.md');
+if ($markdown === false) {
+    $markdown = '# Chyba\n\nSoubor manuálu nebyl nalezen na serveru.';
+}
 ?>
 <!DOCTYPE html>
 <html lang="cs">
