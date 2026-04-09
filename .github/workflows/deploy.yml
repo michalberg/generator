@@ -40,6 +40,6 @@ jobs:
             set net:max-retries 5;
             set net:reconnect-interval-base 5;
             open -u 'jakebrno.cz','$FTP_PASSWORD' ftp://62.109.154.45;
-            mirror -R --parallel=2 --exclude-glob .git* --exclude-glob .github --exclude-glob '*.md' ./ /public_html/generator/;
+            mirror -R --parallel=2 --exclude-glob .git* --exclude-glob .github --exclude-glob 'social-generator-zadani.md' ./ /public_html/generator/;
             bye
           "
