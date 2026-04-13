@@ -156,7 +156,7 @@ Facebook i Instagram chtějí udržet uživatele na platformě. Externí odkazy 
 
 | Metoda | Jak funguje | Výhoda / Poznámka |
 |--------|-------------|-------------------|
-| **Keyword trigger** | "Napiš PETICE do komentáře → pošleme odkaz v DM" | Každý komentář signalizuje algoritmu, že obsah je engaging. **Vyžaduje externí nástroj (ManyChat, Chatfuel apod.)** |
+| **Keyword trigger** | "Napiš PETICE do komentáře → pošleme odkaz v DM" | Každý komentář signalizuje algoritmu, že obsah je engaging. **Vyžaduje externí nástroj (ManyChat, Chatfuel apod.) – budeme v kampani využívat, zatím není.** |
 | **Link ve Stories** | Použijte link sticker | Méně penalizováno než ve feedu |
 | **Odkaz v prvním komentáři** | Odkaz napíšete jako první komentář | Nepenalizuje hlavní post |
 | **Bio link** | "Odkaz najdeš v biu" | Žádná penalizace |
