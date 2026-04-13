@@ -99,6 +99,16 @@ Až 50 % vašeho feedu nyní tvoří doporučený obsah z účtů, které nesled
    - Místní skupiny čtvrtí a městských částí
    - Tematické skupiny (rodiče, cyklisté, zahrádkáři)
 
+6. **Nikdy nesdílejte události ani články přímo**
+   - Vždy napište samostatný příspěvek s obrázkem a odkaz vložte do prvního komentáře.
+   - Výjimka: pokud Facebook odkaz v komentáři zablokuje, příspěvek editujte a odkaz dodejte přímo do textu příspěvku.
+
+7. **Nikdy nesdílejte příspěvek stránky (např. Zelené Brno)**
+   - Vždy napište obsah sami, vlastními slovy, jako za sebe – má to násobně větší dosah než sdílení stránky.
+
+8. **Nikdy nemějte nastavené automatické sdílení mezi Facebookem a Instagramem**
+   - Takový obsah algoritmus rozpozná a penalizuje ho.
+
 ---
 
 ### 3. Instagram Stories – specifika formátu
