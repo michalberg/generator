@@ -64,6 +64,8 @@ Pokud sledující přejede kolem vašeho carouselu bez interakce, algoritmus ho 
 
 ### 2. Facebook – specifika platformy
 
+Facebookové stránky mají extrémně malý dosah. O to důležitější jsou osobní profily kandidátů a členů týmu – právě přes ně by měla kampaň primárně probíhat. Osobní profily mohou mít až desetinásobný dosah oproti stránce.
+
 #### Jak funguje algoritmus
 
 Nejvýše hodnoceným chováním v současném algoritmu už není "lajkování", ale "soukromé sdílení" příspěvku přátelům přes Messenger nebo WhatsApp.
