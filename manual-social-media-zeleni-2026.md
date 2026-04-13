@@ -109,6 +109,9 @@ Až 50 % vašeho feedu nyní tvoří doporučený obsah z účtů, které nesled
 8. **Nikdy nemějte nastavené automatické sdílení mezi Facebookem a Instagramem**
    - Takový obsah algoritmus rozpozná a penalizuje ho.
 
+9. **Pokud to není nutné, nikoho v příspěvku netagujte**
+   - Tagování snižuje organický dosah příspěvku.
+
 ---
 
 ### 3. Instagram Stories – specifika formátu
