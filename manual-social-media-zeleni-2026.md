@@ -205,6 +205,8 @@ Začněte s problémem, ne řešením. Veďte s něčím, co divák rozpoznává
 
 ### Doporučené hook formule
 
+> **Tip:** V generátoru najdete různé návrhy hooků přímo u jednotlivých šablon.
+
 ---
 
 #### HOOK 1: "Expert mi vysvětlil [koncept]"
